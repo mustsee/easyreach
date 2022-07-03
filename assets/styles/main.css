@@ -1,0 +1,2 @@
+.default-enter-active, .default-leave-active { transition: opacity 0.2s; }
+.default-enter, .default-leave-active { opacity: 0; }

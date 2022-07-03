@@ -1,0 +1,10 @@
+/* Check this link */
+/* https://regenrek.com/posts/how-to-use-tailwind-css-with-nuxt/#21-add-the-tailwind-tailwindconfigjs-to-your-project */
+
+/* https://tailwindcss.com/docs/preflight */
+/* Preflight will be injected here */
+@import "tailwindcss/base"; 
+
+@import "tailwindcss/components";
+
+@import "tailwindcss/utilities";
