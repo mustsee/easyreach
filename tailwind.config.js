@@ -3,10 +3,26 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     colors: {
-      "primary-color": "#FF3B3F", // watermelon // action-color
-      "secondary-color": "#A9A9A9", // carbon // font-color
-      "tertiary-color": "#CAEBF2", // sky // light-colorfull-bg
-      "quaternary-color": "#EFEFEF", // neutral // light-bg
+      "primary-color": "#FF3B3F", // watermelon/tart orange
+      "tertiary-color": "#CAEBF2", // sky/powder blue 
+
+      // https://coolors.co/4a5240-8a89c0-642ca9-ff3b3f-caebf2
+      "rifle-green": "#4A5240",
+      "blue-bell": "#8A89C0",
+      "rebecca-purple": "#642CA9",
+
+      // https://coolors.co/601700-f8f991-83781b-ff3b3f-caebf2
+      "spanish-bistre": "#83781B",
+      "canary": "#F8F991",
+      "blood-red": "#601700",
+
+      "orange-50": "#FFF7ED",
+      "orange-100": "#FFEDD5",
+      "orange-200": "#FED7AA",
+      "orange-300": "#FDBA74",
+
+      //"secondary-color": "#A9A9A9", // carbon // font-color
+      //"quaternary-color": "#EFEFEF", // neutral // light-bg
 
       "white": "#FFFFFF",
       "green-400": "#34d399",

@@ -3,7 +3,7 @@
     <header-menu :list="list" />
       <main class="mb-auto bg-white">
         <div class="max-w-screen-xl mx-auto px-6 pt-4 xl:px-0"><!-- 1280px -->
-          <nuxt></nuxt>
+          <nuxt keep-alive></nuxt>
         </div>
       </main>
     <footer-page />
