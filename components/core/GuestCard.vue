@@ -23,8 +23,8 @@
         </div>
       </div>
       <div class="lg:w-3/5 px-6 py-8 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
-        <select-component @select="handleSelect" />
-        <textarea-component class="mt-6" :message="getMessage" />
+        <select-component @selectChange="handleSelectType" :type="type" :messages="getMessages" />
+        <textarea-component @textChange="handleTextChange" :text="text" class="mt-6" />
         <div class="mt-8">
           <div class="action-button rounded-md shadow">
             <a 
@@ -55,43 +55,56 @@ export default {
   props: ["booking", "staffName"],
   data() {
     return {
-      message: "",
-      messages: [],
+      text: "",
+      type: "",
+      variables: {},
     }
   },
   computed: {
-    getMessage() {
-      const message = this.messages.filter(message => message.slug === this.message)
-      if (message.length) {
-        const { data, variables } = message[0]
-        let messageToArray = data.split("--")
-        let computedArray = messageToArray.map((part) => {
-          if (parseInt(part)) {
-            return this.booking[variables[part]] ? this.booking[variables[part]] : this[variables[part]]
-          }
-          return part
-        })
-        return computedArray.join("")
-      }
-      return ""
+    getMessages() {
+      return this.$store.state.messages
     },
     getWhatsAppLink() {
       // There might be some reservations without phone numbers
       if (this.booking["phone"]) {
         // https://web.whatsapp.com/send?phone=whatsappphonenumber&text=urlencodedtext
-        let encodedText =  encodeURI(this.getMessage)
+        let encodedText =  encodeURI(this.text)
         return `https://web.whatsapp.com/send?phone=${this.booking.phone}&text=${encodedText}`
       }
       return ""
     }
   },
   methods: {
-    handleSelect(value) {
-      this.message = value
+    changeVariablesInText(text, variables = this.variables) {
+      let textToArray = text.split("--")
+      let modifiedArray = textToArray.map((part) => {
+        if (parseInt(part)) {
+          return this.booking[variables[part]] ? 
+                  this.booking[variables[part]] : this[variables[part]] ? 
+                    this[variables[part]] : "--" +  variables[part] + "--"
+        }
+        return part
+      })
+      return modifiedArray.join("")
+    },
+    handleSelectType(value) {
+      let message = this.getMessages.filter(message => message.type === value)[0]
+      this.type = value
+      this.variables = message.variables
+      this.text = this.changeVariablesInText(message.text, message.variables) 
+    },
+    handleTextChange(value) {
+      this.text = value
     }
   },
   mounted() {
-    this.messages = this.$store.state.messages
+    // The first message in the array is the default message
+    // TODO: make it more intelligent afterwards
+    const { text, type, variables } = this.getMessages[0]
+    this.type = type
+    this.variables = variables
+    this.text = this.changeVariablesInText(text, variables)
+
   }
 }
 </script>

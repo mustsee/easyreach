@@ -1,7 +1,7 @@
 <template>
   <div class="relative border border-gray-300 text-gray-800 bg-white shadow-md">
-    <select class="appearance-none w-full py-1 px-2 bg-white focus:outline-none" name="messages" id="messages" v-model="message">
-      <option v-for="message in messages" :key="message.slug" :value="message.slug">{{ message.name }}</option>
+    <select class="appearance-none w-full py-1 px-2 bg-white focus:outline-none" name="messages" id="messages" v-model="getType">
+      <option v-for="message in messages" :key="message.type" :value="message.type">{{ message.name }}</option>
     </select>
     <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2 text-gray-700 border-l border-gray-300">
         <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -13,20 +13,16 @@
 
 <script>
 export default {
-  data() {
-    return {
-      message: "",
-      messages: []
-    }
-  },
-  watch: {
-    message(newValue, oldValue) {
-      if (newValue !== oldValue) this.$emit('select', newValue)
-    }
-  },
-  mounted() {
-    this.message = this.$store.state.messages[0].slug
-    this.messages = this.$store.state.messages
+  props: ["type", "messages"],
+  computed: {
+    getType: {
+      get: function() {
+        return this.type
+      },
+      set: function(newValue) {
+        return this.$emit("selectChange", newValue)
+      }
+    },
   }
 }
 </script>
