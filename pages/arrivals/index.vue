@@ -1,6 +1,7 @@
 <template>
   <div>
-    <guest-card v-for="(booking, index) in bookings" :key="index" :booking="booking" :staffName="staffName" />
+    <summary-cards />
+    <guest-card v-for="(booking, index) in bookings" :key="index" :booking="booking" :getMessages="messages" :staffName="staffName" />
   </div>
 </template>
 
@@ -15,10 +16,15 @@ export default {
       bookings: [],
     }
   },
+  computed: {
+    messages() {
+      return this.$store.state.messages
+    }
+  },
   async fetch() {
     // https://nuxtjs.org/docs/directory-structure/components/
     // TODO: See if it's best to call it booking or guest
-    this.bookings = data.bookings
+    this.bookings = data.bookings.slice(0, 5)
   }
 }
 </script>

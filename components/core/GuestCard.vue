@@ -1,9 +1,12 @@
 <template>
-  <div class="px-4 pb-6">
-    <div class="rounded-lg shadow-lg lg:flex">
+  <div class="pb-6">
+    <div class="shadow-md lg:flex">
       <div class="flex-1 px-6 py-8 bg-white lg:p-12">
         <h3 class="text-2xl font-extrabold text-gray-900 sm:text-3xl">{{ booking.name }}</h3>
-        <p class="mt-6 text-base text-gray-500 truncate">{{ booking.phone ? booking.phone : "No phone" }} <br/> {{ booking.email ? booking.email : "No email" }}</p>
+        <p class="mt-6 text-base text-gray-500 truncate">
+          <span v-if="booking.groupReservation">(group of {{ booking.personsInGroup }})<br/></span>
+          {{ booking.phone ? booking.phone : "No phone" }} <br/> 
+          {{ booking.email ? booking.email : "No email" }}</p>
         <div class="mt-8">
           <div class="flex items-center">
             <h4 class="flex-shrink-0 pr-4 text-sm font-semibold tracking-wider uppercase bg-white">Guest infos</h4>
@@ -17,7 +20,7 @@
             </li>
             <li class="lg:col-span-1">
               <p class="text-gray-900">Comments</p>
-              <p class="text-sm text-gray-700" v-html="`${booking.guestComments ? booking.guestComments : 'No data'}`"></p>
+              <p class="text-sm text-gray-700" v-html="`${booking.guestCommentsModified ? booking.guestCommentsModified : 'No data'}`"></p>
             </li>
           </ul>
         </div>
@@ -30,8 +33,8 @@
             <a 
               :href="getWhatsAppLink" 
               :class="[
-              'flex items-center justify-center w-full px-5 py-3 text-base font-medium text-primary-color bg-white border border-transparent rounded-md hover:text-white hover:bg-primary-color transition-all', 
-              !getWhatsAppLink ? 'pointer-events-none text-gray-800 border border-gray-800 bg-gray-200' : '' 
+              'flex items-center justify-center w-full px-5 py-3 text-base font-medium text-light-whatsapp bg-white border border-light-whatsapp rounded-md hover:text-dark-whatsapp hover:border-dark-whatsapp hover:bg-light-whatsapp transition-all', 
+              !getWhatsAppLink ? 'pointer-events-none text-gray-800 border border-gray-800 bg-gray-200 opacity-75' : '' 
               ]"
               target="_blank">
                 Open in
@@ -52,7 +55,7 @@
 
 <script>
 export default {
-  props: ["booking", "staffName"],
+  props: ["booking", "staffName", "getMessages"],
   data() {
     return {
       text: "",
@@ -61,9 +64,6 @@ export default {
     }
   },
   computed: {
-    getMessages() {
-      return this.$store.state.messages
-    },
     getWhatsAppLink() {
       // There might be some reservations without phone numbers
       if (this.booking["phone"]) {
@@ -100,7 +100,8 @@ export default {
   mounted() {
     // The first message in the array is the default message
     // TODO: make it more intelligent afterwards
-    const { text, type, variables } = this.getMessages[0]
+    const messageType = this.booking.messageType
+    const { text, type, variables } = this.getMessages.filter(message => message.type === messageType)[0]
     this.type = type
     this.variables = variables
     this.text = this.changeVariablesInText(text, variables)
@@ -113,18 +114,20 @@ export default {
 /* https://codepen.io/stackdiary/pen/xxPRLjV */
 
 .action-button:hover .whatsapp-icon {
-  fill: #FFFFFF;
+  fill: #075E54;
 }
 
 .action-button:hover .disable {
-  fill: inherit;
+  fill: #1F2937;
+  opacity: 0.75;
 }
 
 .whatsapp-icon {
-  fill: #FF3B3F;
+  fill: #25D366;
 }
 
 .disable {
   fill: #1F2937;
+  opacity: 0.75;
 }
 </style>

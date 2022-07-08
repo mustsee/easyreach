@@ -1,6 +1,6 @@
 <template>
   <div class="border border-gray-300 rounded flex flex-col text-gray-800 bg-white shadow-md">
-    <div class="bg-tertiary-color px-3 py-2 border-b border-gray-300">
+    <div class="bg-gray-200 px-3 py-2 border-b border-gray-300">
       <h3 class="text-sm text-left font-medium">Output</h3>
     </div>
     <textarea 
