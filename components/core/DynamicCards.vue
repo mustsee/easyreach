@@ -5,18 +5,19 @@
   >
     <div class="p-4 flex items-center">
       <div
-        class="p-3 rounded-full text-amber-500 bg-amber-100 mr-4"
+        class="p-3 rounded-full text-gray-500 bg-gray-100 mr-4"
       >
        <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
          <path d="M20.822 18.096c-3.439-.794-6.64-1.49-5.09-4.418 4.72-8.912 1.251-13.678-3.732-13.678-5.082 0-8.464 4.949-3.732 13.678 1.597 2.945-1.725 3.641-5.09 4.418-3.073.71-3.188 2.236-3.178 4.904l.004 1h23.99l.004-.969c.012-2.688-.092-4.222-3.176-4.935z"/>
         </svg>
       </div>
       <div class="flex flex-1">
-        <p class="flex flex-1 relative text-base font-normal text-gray-700">
-          <input type="text" placeholder="Sender's name" spellcheck="false" class="w-full pl-3 pr-8 py-2 rounded-sm shadow focus:outline-none focus:shadow-outline">
-          <span class="absolute pr-2 py-3 right-0 z-10 bg-transparent text-base font-normal text-gray-400">
+        <p class="relative flex flex-1 text-base font-normal text-gray-700">
+          <input v-model="senderName" v-on:keyup.enter="handleSenderName" type="text" placeholder="Sender's name" spellcheck="false" class="w-full pl-3 pr-12 py-2 rounded-sm shadow focus:outline-none focus:shadow-outline">
+          <span @click="handleSenderName" :class="['absolute px-3 right-0 top-0 bottom-0 flex items-center z-10 border-l text-gray-500 bg-gray-100 cursor-pointer hover:text-gray-600 hover:bg-gray-200 transition-all', 
+            senderName.length < 3 ? 'pointer-events-none opacity-50' : '']">
             <svg fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
-              <path d="M1.438 16.875l5.688 5.689-7.126 1.436 1.438-7.125zm22.562-11.186l-15.46 15.46-5.688-5.689 15.459-15.46 5.689 5.689zm-4.839-2.017l-.849-.849-12.614 12.599.85.849 12.613-12.599z"/>
+              <path d="M12.849 24l-3.96-7.853-4.889 4.142v-20.289l16 12.875-6.192 1.038 3.901 7.696-4.86 2.391zm-3.299-10.979l4.194 8.3 1.264-.617-4.213-8.313 4.632-.749-9.427-7.559v11.984l3.55-3.046z"/>
             </svg>
           </span>
         </p>
@@ -28,7 +29,7 @@
   >
     <div class="p-4 flex items-center">
       <div
-        class="p-3 rounded-full text-amber-500 bg-amber-100 mr-4"
+        class="p-3 rounded-full text-gray-500 bg-gray-100 mr-4"
       >
         <svg fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
           <path d="M22 2v22h-20v-22h3c1.23 0 2.181-1.084 3-2h8c.82.916 1.771 2 3 2h3zm-11 1c0 .552.448 1 1 1 .553 0 1-.448 1-1s-.447-1-1-1c-.552 0-1 .448-1 1zm9 1h-4l-2 2h-3.897l-2.103-2h-4v18h16v-18zm-13 9.729l.855-.791c1 .484 1.635.852 2.76 1.654 2.113-2.399 3.511-3.616 6.106-5.231l.279.64c-2.141 1.869-3.709 3.949-5.967 7.999-1.393-1.64-2.322-2.686-4.033-4.271z"/>
@@ -53,7 +54,7 @@
   >
     <div class="p-4 flex items-center">
       <div
-        class="p-3 rounded-full text-amber-500 bg-amber-100 mr-4"
+        class="p-3 rounded-full text-gray-500 bg-gray-100 mr-4"
       >
         <svg fill="currentColor" class="w-5 h-5" viewBox="0 0 20 20">
          <path
@@ -83,7 +84,7 @@
   >
     <div class="p-4 flex items-center">
       <div
-        class="p-3 rounded-full text-amber-500 bg-amber-100 mr-4"
+        class="p-3 rounded-full text-gray-500 bg-gray-100 mr-4"
       >
         <svg fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
          <path d="M20 20h-4v-4h4v4zm-6-10h-4v4h4v-4zm6 0h-4v4h4v-4zm-12 6h-4v4h4v-4zm6 0h-4v4h4v-4zm-6-6h-4v4h4v-4zm16-8v22h-24v-22h3v1c0 1.103.897 2 2 2s2-.897 2-2v-1h10v1c0 1.103.897 2 2 2s2-.897 2-2v-1h3zm-2 6h-20v14h20v-14zm-2-7c0-.552-.447-1-1-1s-1 .448-1 1v2c0 .552.447 1 1 1s1-.448 1-1v-2zm-14 2c0 .552-.447 1-1 1s-1-.448-1-1v-2c0-.552.447-1 1-1s1 .448 1 1v2z"/>
@@ -104,6 +105,32 @@
   </div>
 </div>
 </template>
+
+<script>
+import { mapActions } from "vuex";
+
+export default {
+  computed: {
+    senderName: {
+      get() {
+        return this.$store.state.senderName
+      },
+      set(newValue) {
+        this.$store.commit('updateSenderName', newValue)
+      }
+    }
+  },
+  methods: {
+    ...mapActions({
+      setSenderNameInCards: 'setSenderNameInCards' // map `this.add()` to `this.$store.dispatch('increment')`
+    }),
+    handleSenderName() {
+      // Change senderName in all cards
+      this.$store.dispatch('setSenderNameInCards')
+    }
+  }
+}
+</script>
 
 <style scoped>
 /* https://tailwindcomponents.com/component/statistic-cards */

@@ -22,8 +22,8 @@ export default {
       get: function() {
         return this.text
       },
-      set: function(newValue) {
-        return this.$emit("textChange", newValue)
+      set: function(value) {
+        return this.$emit("textChange", value)
       }
     }
   }

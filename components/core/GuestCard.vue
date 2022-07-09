@@ -54,16 +54,29 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
-  props: ["booking", "staffName", "getMessages"],
-  data() {
-    return {
-      text: "",
-      type: "",
-      variables: {},
-    }
-  },
+  props: ["booking", "getMessages"],
   computed: {
+    bookId() {
+      return this.booking.bookId
+    },
+    messageType() {
+      return this.booking.messageType
+    },
+    text() {
+      const { cardsInfos } = this.$store.state
+      const { bookId } = this 
+      if (cardsInfos[bookId]) return cardsInfos[bookId]["text"]
+      return ""
+    },
+    type() {
+      const { cardsInfos } = this.$store.state
+      const { bookId } = this 
+      if (cardsInfos[bookId]) return cardsInfos[bookId]["type"]
+      return ""
+    },
     getWhatsAppLink() {
       // There might be some reservations without phone numbers
       if (this.booking["phone"]) {
@@ -75,37 +88,24 @@ export default {
     }
   },
   methods: {
-    changeVariablesInText(text, variables = this.variables) {
-      let textToArray = text.split("--")
-      let modifiedArray = textToArray.map((part) => {
-        if (parseInt(part)) {
-          return this.booking[variables[part]] ? 
-                  this.booking[variables[part]] : this[variables[part]] ? 
-                    this[variables[part]] : "--" +  variables[part] + "--"
-        }
-        return part
-      })
-      return modifiedArray.join("")
-    },
+    ...mapActions({
+      setSenderNameInCards: 'setSenderNameInCards' // map `this.add()` to `this.$store.dispatch('increment')`
+    }),
     handleSelectType(value) {
-      let message = this.getMessages.filter(message => message.type === value)[0]
-      this.type = value
-      this.variables = message.variables
-      this.text = this.changeVariablesInText(message.text, message.variables) 
+      this.computeCardInfos(value)
     },
-    handleTextChange(value) {
-      this.text = value
+    handleTextChange(text) {
+      this.$store.commit('setCardText', { bookId: this.bookId, text })
+    },
+    computeCardInfos(messageType) {
+      const { bookId, getMessages, booking } = this
+      const { text, type, variables } = getMessages.filter(message => message.type === messageType)[0]
+      this.$store.commit('setCardInfos', { bookId, text, type, variables })
+      this.$store.dispatch('setVariablesInText', { booking })
     }
   },
   mounted() {
-    // The first message in the array is the default message
-    // TODO: make it more intelligent afterwards
-    const messageType = this.booking.messageType
-    const { text, type, variables } = this.getMessages.filter(message => message.type === messageType)[0]
-    this.type = type
-    this.variables = variables
-    this.text = this.changeVariablesInText(text, variables)
-
+    this.computeCardInfos(this.messageType)
   }
 }
 </script>
