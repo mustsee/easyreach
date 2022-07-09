@@ -26,7 +26,7 @@
         </div>
       </div>
       <div class="lg:w-3/5 px-6 py-8 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
-        <select-component @selectChange="handleSelectType" :type="type" :messages="getMessages" />
+        <select-component @selectChange="handleSelectType" :type="type" :messages="messages" />
         <textarea-component @textChange="handleTextChange" :text="text" class="mt-6" />
         <div class="mt-8">
           <div class="action-button rounded-md shadow">
@@ -57,7 +57,7 @@
 import { mapActions } from "vuex";
 
 export default {
-  props: ["booking", "getMessages"],
+  props: ["booking", "messages"],
   computed: {
     bookId() {
       return this.booking.bookId
@@ -98,8 +98,8 @@ export default {
       this.$store.commit('setCardText', { bookId: this.bookId, text })
     },
     computeCardInfos(messageType) {
-      const { bookId, getMessages, booking } = this
-      const { text, type, variables } = getMessages.filter(message => message.type === messageType)[0]
+      const { bookId, messages, booking } = this
+      const { text, type, variables } = messages.filter(message => message.type === messageType)[0]
       this.$store.commit('setCardInfos', { bookId, text, type, variables })
       this.$store.dispatch('setVariablesInText', { booking })
     }

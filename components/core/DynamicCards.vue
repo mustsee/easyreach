@@ -90,16 +90,17 @@
          <path d="M20 20h-4v-4h4v4zm-6-10h-4v4h4v-4zm6 0h-4v4h4v-4zm-12 6h-4v4h4v-4zm6 0h-4v4h4v-4zm-6-6h-4v4h4v-4zm16-8v22h-24v-22h3v1c0 1.103.897 2 2 2s2-.897 2-2v-1h10v1c0 1.103.897 2 2 2s2-.897 2-2v-1h3zm-2 6h-20v14h20v-14zm-2-7c0-.552-.447-1-1-1s-1 .448-1 1v2c0 .552.447 1 1 1s1-.448 1-1v-2zm-14 2c0 .552-.447 1-1 1s-1-.448-1-1v-2c0-.552.447-1 1-1s1 .448 1 1v2z"/>
         </svg>
       </div>
-      <div class="flex-1 flex justify-around items-center text-gray-500">
-        <svg fill="currentColor" class="py-2 px-1	w-8 h-10" viewBox="0 0 24 24">
+      <div class="flex-1 flex items-center text-gray-500">
+      <!-- <div class="flex-1 flex justify-around items-center text-gray-500"> -->
+        <!-- <svg fill="currentColor" class="py-2 px-1	w-8 h-10" viewBox="0 0 24 24">
           <path d="m13.789 7.155c.141-.108.3-.157.456-.157.389 0 .755.306.755.749v8.501c0 .445-.367.75-.755.75-.157 0-.316-.05-.457-.159-1.554-1.203-4.199-3.252-5.498-4.258-.184-.142-.29-.36-.29-.592 0-.23.107-.449.291-.591 1.299-1.002 3.945-3.044 5.498-4.243z"/>
-        </svg>
+        </svg> -->
         <p class="text-base font-normal text-gray-700">
-          08-07-22
+          {{ date }}
         </p>
-        <svg fill="currentColor" class="py-2 px-1	w-8 h-10" viewBox="0 0 24 24">
+        <!-- <svg fill="currentColor" class="py-2 px-1	w-8 h-10" viewBox="0 0 24 24">
           <path d="m10.211 7.155c-.141-.108-.3-.157-.456-.157-.389 0-.755.306-.755.749v8.501c0 .445.367.75.755.75.157 0 .316-.05.457-.159 1.554-1.203 4.199-3.252 5.498-4.258.184-.142.29-.36.29-.592 0-.23-.107-.449-.291-.591-1.299-1.002-3.945-3.044-5.498-4.243z"/>
-        </svg>
+        </svg> -->
       </div>
     </div>
   </div>
@@ -110,6 +111,7 @@
 import { mapActions } from "vuex";
 
 export default {
+  props: ["date"],
   computed: {
     senderName: {
       get() {

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <summary-cards :numberOfGuests="getNumberOfGuests"/>
-    <dynamic-cards />
-    <guest-card v-for="(booking, index) in bookings" :key="index" :booking="booking" :getMessages="messages" />
+    <summary-cards :numberOfGuests="getNumberOfGuests" />
+    <dynamic-cards :date="getDate" />
+    <guest-card v-for="(booking, index) in getBookings" :key="index" :booking="booking" :messages="getMessages" />
   </div>
 </template>
 
@@ -11,15 +11,23 @@
 export default {
   transition: 'default',
   computed: {
-    messages() {
+    getNumberOfGuests() {
+      return this.getBookings.length
+    },
+    getDate() {
+      // TODO: Get this info from DB later
+      let date = this.getBookings[0]["firstNight"]
+      let datePart = date.match(/\d+/g),
+      year = datePart[0].substring(2), // get only two digits
+      month = datePart[1], day = datePart[2];
+      return day+'/'+month+'/'+year;
+    },
+    getMessages() {
       return this.$store.state.messages
     },
-    getNumberOfGuests() {
-      return this.bookings.length
-    },
-    bookings() {
+    getBookings() {
       return this.$store.state.bookings
-    }
+    },
   },
   async fetch() {
     // https://nuxtjs.org/docs/directory-structure/components/
