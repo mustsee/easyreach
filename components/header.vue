@@ -5,7 +5,7 @@
         <nuxt-link 
           to="/" 
           :title="$store.state.company.name"
-          class="text-gray-700 font-medium bg-white border-l-4 border-gray-500 px-3 py-1"
+          class="truncate text-gray-700 font-medium bg-white border-l-4 border-gray-500 px-3 py-1"
         >
           {{ $store.state.company.name }}
         </nuxt-link>

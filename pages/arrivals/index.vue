@@ -1,7 +1,6 @@
 <template>
   <div>
-    <summary-cards :numberOfGuests="getNumberOfGuests" />
-    <dynamic-cards :date="getDate" />
+    <arrivals-menu :numberOfGuests="getNumberOfGuests" :date="getDate" />
     <guest-card v-for="(booking, index) in getBookings" :key="index" :booking="booking" :messages="getMessages" />
   </div>
 </template>
