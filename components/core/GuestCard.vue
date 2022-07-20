@@ -34,7 +34,7 @@
               :href="getWhatsAppLink" 
               :class="[
               'flex items-center justify-center w-full px-5 py-3 text-base font-medium text-light-whatsapp bg-white border border-light-whatsapp rounded-md hover:text-dark-whatsapp hover:border-dark-whatsapp hover:bg-light-whatsapp transition-all', 
-              !getWhatsAppLink ? 'pointer-events-none text-gray-800 border border-gray-800 bg-gray-200 opacity-75' : '' 
+              !getWhatsAppLink ? 'pointer-events-none opacity-50' : '' 
               ]"
               target="_blank">
                 Open in
@@ -118,8 +118,8 @@ export default {
 }
 
 .action-button:hover .disable {
-  fill: #1F2937;
-  opacity: 0.75;
+  fill: #25D366;
+  opacity: 0.5;
 }
 
 .whatsapp-icon {
@@ -127,7 +127,6 @@ export default {
 }
 
 .disable {
-  fill: #1F2937;
-  opacity: 0.75;
+  opacity: 0.5;
 }
 </style>

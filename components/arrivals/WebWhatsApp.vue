@@ -1,7 +1,7 @@
 <template>
   <div :class="`flex-col sm:flex-row flex flex-1 ${ removeBorder ? '' : 'border-2 border-gray-100' } bg-white`">
     <!-- element CONNECTED -->
-    <div class="p-4 flex w-full items-center" :title="connected ? 'Connected to WhatsApp' : 'Not connected to WhatsApp'">
+    <div class="py-4 flex w-full items-center" :title="connected ? 'Connected to WhatsApp' : 'Not connected to WhatsApp'">
       <div
         :class="['flex p-3', connected ? 'text-green-500 bg-green-100' : 'text-red-500 bg-red-100']"
       >
@@ -17,20 +17,20 @@
       </div>
     </div>
     <!-- element CHECK NUMBERS-->
-    <div class="p-4 flex w-full items-center">
+    <div class="relative py-4 flex w-full items-center ">
       <div 
-        v-on:keyup.enter="" 
+        v-on:keyup.enter=""
         type="text" 
-        :class="['w-full text-center truncate px-4 py-2 cursor-pointer rounded-sm shadow text-gray-500 bg-gray-100 hover:text-gray-600 hover:bg-gray-200', !connected ? 'pointer-events-none opacity-50' : '']">
+        :class="['w-full text-center truncate px-4 py-2 cursor-pointer rounded-sm shadow text-gray-600 hover:shadow-md', !connected ? 'pointer-events-none opacity-50' : '']">
           Check numbers
       </div>
     </div>
     <!-- 3 element BULK SEND -->
-    <div class="p-4 flex w-full items-center ">
+    <div class="py-4 flex w-full items-center ">
       <div 
         v-on:keyup.enter="" 
         type="text" 
-        :class="['w-full text-center truncate px-4 py-2 cursor-pointer rounded-sm shadow text-gray-500 bg-gray-100 hover:text-gray-600 hover:bg-gray-200', !connected ? 'pointer-events-none opacity-50' : '']">
+        :class="['w-full text-center truncate px-4 py-2 cursor-pointer rounded-sm shadow text-gray-600 hover:shadow-md', !connected ? 'pointer-events-none opacity-50' : '']">
           Bulk send
       </div>
       </div>

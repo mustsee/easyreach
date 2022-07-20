@@ -15,7 +15,7 @@
           Progression
         </p>
         <p class="text-base font-normal text-gray-700">
-          0 <span class="font-light">/</span> 18
+          0 <span class="font-light">/</span> {{ numberOfGuests }}
         </p>
       </div>
     </div>
@@ -24,6 +24,6 @@
 
 <script>
 export default {
-  props: ["color"]
+  props: ["color", "numberOfGuests"]
 }
 </script>

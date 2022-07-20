@@ -1,11 +1,18 @@
-import data from "@/assets/data/beds24-API.js"
+import { fireDb } from '@/plugins/firebase.js'
+//import data from "@/assets/data/beds24-API.js"
 
 export const state = () => ({
   company: {
-    name: "Izy Rich",
-    shortenedName: "IR"
+    name: "Easy Reach",
+    shortenedName: "ER"
   },
-  bookings: data.bookings.slice(0,6),
+  typeFilter: "all",
+  statusFilter: "all",
+  // date related state
+  currentDate: null,
+  //bookings: data.bookings.slice(0, 1),
+  bookings: {},
+  lastUpdates: {},
   cardsInfos: {},
   senderName: "",
   lastSenderName: "",
@@ -15,7 +22,7 @@ export const state = () => ({
       type: "defaultWelcomeMessage", // type is name without space and with first word lowercase then capitalize
       name: "Default welcome message", // Entered by the customer
       variables: ["guestFirstName", "senderName", "dayOfWeek"],
-      text: `Hi --guestFirstName--, this is --senderName--, from the Princes Street Hostel, I hope you are well and thanks again for booking with us. Could you please let us know what time you will be arriving on --dayOfWeek--?\n\nPlease bear in mind we are at the very top of our building and there are a quite a few steps to reach reception level.\n\nSee you soon!`
+      text: `Hi --guestFirstName--, this is --senderName-- from the Princes Street Hostel, I hope you are well and thanks again for booking with us. Could you please let us know what time you will be arriving on --dayOfWeek--?\n\nPlease bear in mind we are at the very top of our building and there are a quite a few steps to reach reception level.\n\nSee you soon!`
     },
     {
       type: "withArrivalTime",
@@ -38,7 +45,35 @@ export const state = () => ({
   ]
 })
 
+export const getters = {
+  apiDate(state) {
+    const { currentDate } = state
+    if (currentDate) {
+      let timezoneOffset = currentDate.getTimezoneOffset()
+      let modifiedDate = new Date(currentDate.setHours(currentDate.getHours() +  (timezoneOffset / 60))) 
+      return modifiedDate.toISOString().split("T")[0].replace(/-/g,"");
+    }
+  },
+  fireStoreDate(state) {
+    const { currentDate } = state
+    if (currentDate) {
+      let timezoneOffset = currentDate.getTimezoneOffset()
+      let modifiedDate = new Date(currentDate.setHours(currentDate.getHours() +  (timezoneOffset / 60))) 
+      return  modifiedDate.toISOString().split("T")[0] 
+    }
+  }
+}
+
 export const mutations = {
+  setCurrentDate(state, value) {
+    state.currentDate = value
+  },
+  updateTypeFilter(state, value) {
+    state.typeFilter = value
+  },
+  updateStatusFilter(state, value) {
+    state.statusFilter = value
+  },
   updateSenderName(state, value) {
     state.senderName = value
   },
@@ -59,11 +94,25 @@ export const mutations = {
         text,
       }
     }
+  },
+  setBookings(state, { bookings, date}) {
+    state.bookings = {
+      ...state.bookings,
+      [date]: bookings,
+    }
+  },
+  setLastUpdates(state, { key, value }) {
+    state.lastUpdates = {
+      ...state.lastUpdates,
+      [key]: value
+    }
   }
 }
 
 export const actions = {
-  setSenderNameInCards({ state, commit, dispatch }) {
+  setSenderNameInCards({ state, commit, getters, dispatch }) {
+    // TODO: If there is two times the same occurrence in the text, might cause a bug.
+    // Check if more than one occurence, and if so, warn the user and ask for modification beforehand
     if (state.lastSenderName) {
       Object.keys(state.cardsInfos).map(key => {
         let { text } = state.cardsInfos[key]
@@ -72,11 +121,11 @@ export const actions = {
       })
     } else {
       Object.keys(state.cardsInfos).map(key => { 
-        let booking = state.bookings.find(booking => booking.bookId === key)
+        let booking = state.bookings[getters.apiDate].find(booking => booking.bookId === key)
         dispatch('setVariablesInText', { booking })
       });
-      commit('setLastSenderName', state.senderName)
     }
+    commit('setLastSenderName', state.senderName)
   },
   setVariablesInText({ state, commit }, { booking }) {
     const { text, variables } = state.cardsInfos[booking.bookId]
@@ -86,6 +135,59 @@ export const actions = {
       modifiedText = modifiedText.replace(`--${variable}--`, replaceBy )
     }
     commit('setCardText', { bookId: booking.bookId, text: modifiedText })
+  },  
+  // Get data from Firestore Database
+  // https://stackoverflow.com/questions/40165766/returning-promises-from-vuex-actions
+  loadGuestsData({ getters, commit }) {
+    return new Promise((resolve, reject) => {
+      fireDb.collection('guests')
+      .where("firstNight", "==", getters.fireStoreDate)
+      .orderBy("name")
+      .get()
+      .then((querySnapshot) => {
+        let res = []
+        querySnapshot.forEach((doc) => {
+          res.push(doc.data())
+        });
+        commit('setBookings', { bookings: res, date: getters.apiDate })
+        resolve({ length: res.length })
+      }, error => reject(error));
+    })
+  },
+  dataLastUpdate({ commit, getters }) {
+    return new Promise((resolve, reject) => {
+      let dateRef = fireDb.collection("updatedAt").doc(getters.apiDate);
+      dateRef.get()
+      .then((doc) => {
+        if (doc.exists) {
+          commit('setLastUpdates', { key: getters.apiDate, value: doc.data().updatedAt })  
+        }
+        resolve()
+      }).catch(error => reject(error) );
+    })
+  },
+  dateLastUpdates({ commit }) {
+    return new Promise((resolve, reject) => {
+      let datesRef = fireDb.collection("updatedAt")
+      datesRef.get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(date => {
+          commit('setLastUpdates', { key: date.id, value: date.data().updatedAt })
+        })
+        resolve()
+      }).catch(error => reject(error))
+    })
+  },
+  // Write data in Firestore Database
+  // Post data from Beds24 to Firestore Database
+  writeGuestsData({ getters, dispatch }) {
+    return new Promise((resolve, reject) => {
+      this.$axios.$get('http://localhost:5001/easy-reach-1ba28/us-central1/getArrivals?date=' + getters.apiDate)
+        .then(res => {
+          dispatch('dataLastUpdate')
+          resolve(res)
+        }, error => reject(error))
+    })
   },
 }
 
