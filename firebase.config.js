@@ -1,9 +1,9 @@
 module.exports = {
-  apiKey: "AIzaSyBHfZYaDZd20sKk3D5jG0QnORsVJkBnaHA",
-  authDomain: "easy-reach-1ba28.firebaseapp.com",
-  projectId: "easy-reach-1ba28",
-  storageBucket: "easy-reach-1ba28.appspot.com",
-  messagingSenderId: "166995665965",
-  appId: "1:166995665965:web:4b06e052414e09fec704a4",
-  measurementId: "G-9SY5BZ50HR"
+  apiKey: "AIzaSyCeargUgIAQBOrUjzKVOYoVisbJWW2HtTY",
+  authDomain: "easy-reach-1f358.firebaseapp.com",
+  projectId: "easy-reach-1f358",
+  storageBucket: "easy-reach-1f358.appspot.com",
+  messagingSenderId: "344931134629",
+  appId: "1:344931134629:web:c0e7bd69de1f0c383f714c",
+  measurementId: "G-L6RQV5CKYG"
 }

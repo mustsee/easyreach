@@ -1,6 +1,4 @@
 import { fireDb } from '@/plugins/firebase.js'
-//import data from "@/assets/data/beds24-API.js"
-
 export const state = () => ({
   company: {
     name: "Easy Reach",
@@ -95,6 +93,16 @@ export const mutations = {
       }
     }
   },
+  setCardStatus(state, { date, bookId, status }) {
+    const updatedBookings = state.bookings[date].map(item => {
+      if (item.bookId === bookId) item.status = status
+      return item
+    })
+    state.bookings = {
+      ...state.bookings,
+      [date]: updatedBookings
+    }
+  },
   setBookings(state, { bookings, date}) {
     state.bookings = {
       ...state.bookings,
@@ -138,20 +146,19 @@ export const actions = {
   },  
   // Get data from Firestore Database
   // https://stackoverflow.com/questions/40165766/returning-promises-from-vuex-actions
-  loadGuestsData({ getters, commit }) {
+  loadGuestsData({ commit, getters }) {
     return new Promise((resolve, reject) => {
-      fireDb.collection('guests')
-      .where("firstNight", "==", getters.fireStoreDate)
-      .orderBy("name")
-      .get()
-      .then((querySnapshot) => {
-        let res = []
-        querySnapshot.forEach((doc) => {
-          res.push(doc.data())
-        });
-        commit('setBookings', { bookings: res, date: getters.apiDate })
-        resolve({ length: res.length })
-      }, error => reject(error));
+      fireDb.collection(`guests/${getters.apiDate}/bookings`)
+        .orderBy("name")
+        .get()
+        .then((querySnapshot) => {
+          let res = []
+          querySnapshot.forEach((doc) => {
+            res.push(doc.data())
+          });
+          commit('setBookings', { bookings: res, date: getters.apiDate })
+          resolve({ length: res.length })
+        }, error => reject(error));
     })
   },
   dataLastUpdate({ commit, getters }) {
@@ -182,13 +189,22 @@ export const actions = {
   // Post data from Beds24 to Firestore Database
   writeGuestsData({ getters, dispatch }) {
     return new Promise((resolve, reject) => {
-      this.$axios.$get('http://localhost:5001/easy-reach-1ba28/us-central1/getArrivals?date=' + getters.apiDate)
+      this.$axios.$get('http://localhost:5001/easy-reach-1f358/us-central1/getArrivals?date=' + getters.apiDate)
         .then(res => {
           dispatch('dataLastUpdate')
           resolve(res)
         }, error => reject(error))
     })
   },
+  async updateCardStatus({ commit, getters }, { bookId, status }) {
+    try {
+      const cardRef = fireDb.collection('guests').doc(getters.apiDate).collection('bookings').doc(bookId)
+      await cardRef.set({ status }, { merge: true })
+      commit('setCardStatus', { date: getters.apiDate, bookId, status })
+    } catch (error) {
+      console.log('Error while updating card status', error)
+    }
+  }
 }
 
 

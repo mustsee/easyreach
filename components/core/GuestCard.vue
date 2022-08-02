@@ -25,12 +25,13 @@
           </ul>
         </div>
       </div>
-      <div class="lg:w-3/5 px-6 py-8 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
+      <div v-if="booking.status === 'todo'" class="lg:w-3/5 px-6 py-8 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
         <select-component @selectChange="handleSelectType" :type="type" :messages="messages" />
         <textarea-component @textChange="handleTextChange" :text="text" class="mt-6" />
         <div class="mt-8">
           <div class="action-button rounded-md shadow">
             <a 
+              @click="handleClickOnWA(booking.bookId, 'inProgress')"
               :href="getWhatsAppLink" 
               :class="[
               'flex items-center justify-center w-full px-5 py-3 text-base font-medium text-light-whatsapp bg-white border border-light-whatsapp rounded-md hover:text-dark-whatsapp hover:border-dark-whatsapp hover:bg-light-whatsapp transition-all', 
@@ -49,6 +50,7 @@
           </div>
         </div>
       </div>
+      <div v-else-if="booking.status === 'inProgress'">In progress</div>
     </div>
   </div>
 </template>
@@ -89,7 +91,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      setSenderNameInCards: 'setSenderNameInCards' // map `this.add()` to `this.$store.dispatch('increment')`
+      updateCardStatus: 'updateCardStatus'
     }),
     handleSelectType(value) {
       this.computeCardInfos(value)
@@ -102,6 +104,9 @@ export default {
       const { text, type, variables } = messages.filter(message => message.type === messageType)[0]
       this.$store.commit('setCardInfos', { bookId, text, type, variables })
       this.$store.dispatch('setVariablesInText', { booking })
+    },
+    handleClickOnWA(bookId, status) {
+      this.$store.dispatch('updateCardStatus', { bookId, status })
     }
   },
   mounted() {
