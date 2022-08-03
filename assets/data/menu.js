@@ -1,6 +1,6 @@
 module.exports = {
   menu: [
-    {
+    /* {
       name: "dashboard",
       path: "/",
     },
@@ -11,6 +11,6 @@ module.exports = {
     {
       name: "messages",
       path: "/messages"
-    },
+    }, */
   ],
 };

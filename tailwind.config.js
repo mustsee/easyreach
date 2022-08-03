@@ -28,8 +28,6 @@ module.exports = {
       fuchsia: colors.fuchsia,
       pink: colors.pink,
       rose: colors.rose,
-      "light-whatsapp": "#25D366",
-      "dark-whatsapp": "#075E54" ,
     }
   },
   variants: {

@@ -159,7 +159,7 @@ export const actions = {
   loadGuestsData({ commit, getters }) {
     return new Promise((resolve, reject) => {
       fireDb.collection(`guests/${getters.apiDate}/bookings`)
-        .orderBy("name")
+        .orderBy("guestName")
         .get()
         .then((querySnapshot) => {
           let res = []

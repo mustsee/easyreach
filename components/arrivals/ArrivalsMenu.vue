@@ -4,9 +4,9 @@
   <date class="col-span-1 sm:col-span-3" :removeBorder="removeBorder"/>
   <!-- 2 row -->
   <guests class="col-span-1" :numberOfGuests="numberOfGuests" :color="color" />
-  <whats-app class="col-span-1" :connected="connected" :color="color" />
+  <whats-app class="col-span-1" :done="getWhatsAppDone" :total="getWhatsAppTotal" :color="color" />
   <!-- <email :color="color" /> -->
-  <progression class="col-span-1" :color="color" :numberOfGuests="numberOfGuests"/>
+  <progression class="col-span-1" :progress="getProgression" :numberOfGuests="numberOfGuests" :color="color" />
   <!-- 3 row -->
   <!-- <web-whats-app class="col-span-1 sm:col-span-2 grid grid-cols-3 gap-6" :removeBorder="removeBorder" :connected="connected" /> -->
   <!-- <div class="col-span-1 sm:col-span-2 flex flex-col sm:flex-row grid grid-cols-3 gap-6"> -->
@@ -18,13 +18,39 @@
 
 <script>
 export default {
-  props: ["numberOfGuests", "date"],
+  props: ["numberOfGuests", "bookings",],
   data() {
     return {
       color: "blue",
       connected: false,
       removeBorder: true,
     }
+  },
+  computed: {
+    getWhatsAppDone() {
+      if (this.bookings) {
+        return this.bookings.filter(item => {
+          if (item.status === 'done' && item.type === 'whatsapp') return true
+        }).length
+      }
+      return 0
+    },
+    getWhatsAppTotal() {
+      if (this.bookings) {
+        return this.bookings.filter(item => {
+          if (item.type === 'whatsapp') return true
+        }).length
+      }
+      return 0
+    },
+    getProgression() {
+      if (this.bookings) {
+        return this.bookings.filter(item => {
+          if (item.status === 'done') return true
+        }).length
+      }
+      return 0
+    },
   }
 }
 </script>

@@ -16,7 +16,7 @@
           WhatsApp
         </p>
         <p class="text-base font-normal text-gray-700">
-          0 / 0
+          {{ done }} / {{ total }}
         </p>
       </div>
     </div>
@@ -25,6 +25,6 @@
 
 <script>
 export default {
-  props: ["color"]
+  props: ["color", "done", "total"]
 }
 </script>
