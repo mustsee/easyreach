@@ -7,8 +7,8 @@
         <select v-model="type" class="appearance-none w-full py-2 pl-3 pr-10 bg-white focus:outline-none" name="status" id="status">
           <option value="all">All messages</option>
           <option value="whatsapp">WhatsApp</option>
-          <!-- <option value="all">Email</option> -->
-          <option value="other">Other</option>
+          <option value="email">Email</option>
+          <!-- <option value="other">Other</option> -->
         </select>
         <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-3 text-gray-700">
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

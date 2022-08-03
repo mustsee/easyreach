@@ -6,8 +6,9 @@
       <div class="flex flex-1 relative text-gray-700 bg-white rounded-sm shadow">
         <select v-model="status" class="appearance-none w-full py-2 pl-3 pr-10 bg-white focus:outline-none" name="status" id="status">
           <option value="all">All status</option>
-          <option value="done">Done</option>
           <option value="todo">To do</option>
+          <option value="done">Done</option>
+          <option value="error">Error</option>
         </select>
         <div class="pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-3 text-gray-700">
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

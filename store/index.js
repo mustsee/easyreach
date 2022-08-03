@@ -103,6 +103,16 @@ export const mutations = {
       [date]: updatedBookings
     }
   },
+  setCardType(state, { date, bookId, type }) {
+    const updatedBookings = state.bookings[date].map(item => {
+      if (item.bookId === bookId) item.type = type
+      return item
+    })
+    state.bookings = {
+      ...state.bookings,
+      [date]: updatedBookings
+    }
+  },
   setBookings(state, { bookings, date}) {
     state.bookings = {
       ...state.bookings,
@@ -203,6 +213,16 @@ export const actions = {
       commit('setCardStatus', { date: getters.apiDate, bookId, status })
     } catch (error) {
       console.log('Error while updating card status', error)
+    }
+  },
+  async updateCardStatusAndType({ commit, getters }, { bookId, status, type }) {
+    try {
+      const cardRef = fireDb.collection('guests').doc(getters.apiDate).collection('bookings').doc(bookId)
+      await cardRef.set({ status, type }, { merge: true })    
+      await commit('setCardStatus', { date: getters.apiDate, bookId, status })
+      commit('setCardType', { date: getters.apiDate, bookId, type })
+    } catch (error) {
+      console.log('Error while updating card status and type', error)
     }
   }
 }
