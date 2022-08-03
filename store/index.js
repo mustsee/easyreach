@@ -1,4 +1,6 @@
 import { fireDb } from '@/plugins/firebase.js'
+import { collection, query, orderBy, getDocs, getDoc, doc, setDoc } from 'firebase/firestore'
+
 export const state = () => ({
   company: {
     name: "Easy Reach",
@@ -166,83 +168,97 @@ export const actions = {
   },  
   // Get data from Firestore Database
   // https://stackoverflow.com/questions/40165766/returning-promises-from-vuex-actions
-  loadGuestsData({ commit, getters }) {
-    return new Promise((resolve, reject) => {
-      fireDb.collection(`guests/${getters.apiDate}/bookings`)
-        .orderBy("guestName")
-        .get()
-        .then((querySnapshot) => {
-          let res = []
-          querySnapshot.forEach((doc) => {
-            res.push(doc.data())
-          });
-          commit('setBookings', { bookings: res, date: getters.apiDate })
-          resolve({ length: res.length })
-        }, error => reject(error));
-    })
+
+  /////////////////////////////////////
+  //////      COLLECTION        //////
+  ///////////////////////////////////
+
+  async loadGuestsData({ commit, getters }) {
+    const q = query(collection(fireDb, `guests/${getters.apiDate}/bookings`), orderBy('guestName'))
+    try {
+      const querySnapshot = await getDocs(q)
+      let res = []
+      querySnapshot.forEach((doc) => {
+        res.push(doc.data())
+      });
+      commit('setBookings', { bookings: res, date: getters.apiDate })
+    } catch (e) {
+      console.log('Error in loadGuestsData: ', e)
+    }
   },
-  dataLastUpdate({ commit, getters }) {
-    return new Promise((resolve, reject) => {
-      let dateRef = fireDb.collection("updatedAt").doc(getters.apiDate);
-      dateRef.get()
-      .then((doc) => {
-        if (doc.exists) {
-          commit('setLastUpdates', { key: getters.apiDate, value: doc.data().updatedAt })  
-        }
-        resolve()
-      }).catch(error => reject(error) );
-    })
+  async dateLastUpdates({ commit }) {
+    const q = query(collection(fireDb, "updatedAt"))
+    try {
+      const querySnapshot = await getDocs(q)
+      querySnapshot.forEach((doc) => {
+        commit('setLastUpdates', { key: doc.id, value: doc.data().updatedAt })
+      });
+    } catch (e) {
+      console.log('Error in dateLastUpdates: ', e)
+    }
   },
-  dateLastUpdates({ commit }) {
-    return new Promise((resolve, reject) => {
-      let datesRef = fireDb.collection("updatedAt")
-      datesRef.get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(date => {
-          commit('setLastUpdates', { key: date.id, value: date.data().updatedAt })
-        })
-        resolve()
-      }).catch(error => reject(error))
-    })
-  },
-  // Write data in Firestore Database
-  // Post data from Beds24 to Firestore Database
-  writeGuestsData({ getters, dispatch }) {
-    return new Promise((resolve, reject) => {
-      this.$axios.$get('http://localhost:5001/easy-reach-1f358/us-central1/getArrivals?date=' + getters.apiDate)
-        .then(res => {
-          dispatch('dataLastUpdate')
-          resolve(res)
-        }, error => reject(error))
-    })
+  /////////////////////////////////////
+  /////////       DOC        /////////
+  ///////////////////////////////////
+
+  async dataLastUpdate({ commit, getters }) {
+    const ref = doc(fireDb, `updatedAt/${getters.apiDate}`)
+    try {
+      const doc = await getDoc(ref)
+      if (doc.exists()) {
+        commit('setLastUpdates', { key: getters.apiDate, value: doc.data().updatedAt })  
+      }
+    } catch (e) {
+      console.log('Error in dataLastUpdate: ', e)
+    }
   },
   async updateCardStatus({ commit, getters }, { bookId, status }) {
+    const ref = doc(fireDb, `guests/${getters.apiDate}/bookings/${bookId}`)
     try {
-      const cardRef = fireDb.collection('guests').doc(getters.apiDate).collection('bookings').doc(bookId)
-      await cardRef.set({ status }, { merge: true })
+      await setDoc(ref, { status }, { merge: true })
       commit('setCardStatus', { date: getters.apiDate, bookId, status })
     } catch (error) {
       console.log('Error while updating card status: ', error)
     }
   },
   async updateCardStatusAndType({ commit, getters }, { bookId, status, type }) {
+    const ref = doc(fireDb, `guests/${getters.apiDate}/bookings/${bookId}`)
     try {
-      const cardRef = fireDb.collection('guests').doc(getters.apiDate).collection('bookings').doc(bookId)
-      await cardRef.set({ status, type }, { merge: true })    
+      await setDoc(ref, { status, type }, { merge: true })
       await commit('setCardStatus', { date: getters.apiDate, bookId, status })
       commit('setCardType', { date: getters.apiDate, bookId, type })
     } catch (error) {
       console.log('Error while updating card status and type: ', error)
     }
   },
+
+  /////////////////////////////////////
+  //////       FUNCTIONS        //////
+  ///////////////////////////////////
+
+  async writeGuestsData({ getters, dispatch }) {
+    try {
+      let res = await this.$axios.$get('http://localhost:5001/easy-reach-1f358/us-central1/getArrivals?date=' + getters.apiDate)
+      if (res.success) {
+        dispatch('dataLastUpdate')
+        return res
+      }
+    } catch (e) {
+      console.log('Error in writeGuestsData: ', error)
+    }
+  },
   async updateBeds24ArrivalTimeSection({ commit, getters }, { bookId, previousArrivalTimeText }) {
     try {
-      let updateArrivalTime = await this.$axios.$get('http://localhost:5001/easy-reach-1f358/us-central1/updateBeds24ArrivalTimeSection?bookId=' + bookId + '&previousArrivalTimeText=' + previousArrivalTimeText)
-      if (updateArrivalTime.success) {
+      let res = await this.$axios.$get('http://localhost:5001/easy-reach-1f358/us-central1/updateBeds24ArrivalTimeSection?bookId=' + bookId + '&previousArrivalTimeText=' + previousArrivalTimeText)
+      if (res.success) {
         // Update store and firebase / Don't overcharge Beds24 API
-        const cardRef = fireDb.collection('guests').doc(getters.apiDate).collection('bookings').doc(bookId)
-        await cardRef.set({ arrivalTime: updateArrivalTime.text }, { merge: true })    
-        commit('setCardArrivalTime', { date: getters.apiDate, bookId, arrivalTime: updateArrivalTime.text })
+        const ref = doc(fireDb, `guests/${getters.apiDate}/bookings/${bookId}`)
+        try {
+          await setDoc(ref, { arrivalTime: res.text }, { merge: true })
+          commit('setCardArrivalTime', { date: getters.apiDate, bookId, arrivalTime: res.text })
+        } catch (error) {
+          console.log('Error while updating card arrival time: ', error)
+        }
       }
     } catch (error) {
       console.log('Error in updateBeds24ArrivalTimeSection: ', error)
