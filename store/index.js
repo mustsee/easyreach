@@ -113,6 +113,16 @@ export const mutations = {
       [date]: updatedBookings
     }
   },
+  setCardArrivalTime(state, { date, bookId, arrivalTime }) {
+    const updatedBookings = state.bookings[date].map(item => {
+      if (item.bookId === bookId) item.arrivalTime = arrivalTime
+      return item
+    })
+    state.bookings = {
+      ...state.bookings,
+      [date]: updatedBookings
+    }
+  },
   setBookings(state, { bookings, date}) {
     state.bookings = {
       ...state.bookings,
@@ -212,7 +222,7 @@ export const actions = {
       await cardRef.set({ status }, { merge: true })
       commit('setCardStatus', { date: getters.apiDate, bookId, status })
     } catch (error) {
-      console.log('Error while updating card status', error)
+      console.log('Error while updating card status: ', error)
     }
   },
   async updateCardStatusAndType({ commit, getters }, { bookId, status, type }) {
@@ -222,7 +232,20 @@ export const actions = {
       await commit('setCardStatus', { date: getters.apiDate, bookId, status })
       commit('setCardType', { date: getters.apiDate, bookId, type })
     } catch (error) {
-      console.log('Error while updating card status and type', error)
+      console.log('Error while updating card status and type: ', error)
+    }
+  },
+  async updateBeds24ArrivalTimeSection({ commit, getters }, { bookId, previousArrivalTimeText }) {
+    try {
+      let updateArrivalTime = await this.$axios.$get('http://localhost:5001/easy-reach-1f358/us-central1/updateBeds24ArrivalTimeSection?bookId=' + bookId + '&previousArrivalTimeText=' + previousArrivalTimeText)
+      if (updateArrivalTime.success) {
+        // Update store and firebase / Don't overcharge Beds24 API
+        const cardRef = fireDb.collection('guests').doc(getters.apiDate).collection('bookings').doc(bookId)
+        await cardRef.set({ arrivalTime: updateArrivalTime.text }, { merge: true })    
+        commit('setCardArrivalTime', { date: getters.apiDate, bookId, arrivalTime: updateArrivalTime.text })
+      }
+    } catch (error) {
+      console.log('Error in updateBeds24ArrivalTimeSection: ', error)
     }
   }
 }

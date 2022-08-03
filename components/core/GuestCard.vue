@@ -134,7 +134,8 @@ export default {
   methods: {
     ...mapActions({
       updateCardStatus: 'updateCardStatus',
-      updateCardStatusAndType: 'updateCardStatusAndType'
+      updateCardStatusAndType: 'updateCardStatusAndType',
+      updateBeds24ArrivalTimeSection: 'updateBeds24ArrivalTimeSection'
     }),
     handleSelectType(value) {
       this.computeCardInfos(value)
@@ -153,6 +154,9 @@ export default {
     },
     updateBookingStatusAndType(bookId, status, type) {
       this.$store.dispatch('updateCardStatusAndType', { bookId, status, type })
+      if (status === 'done' && type === 'whatsapp') {
+        this.$store.dispatch('updateBeds24ArrivalTimeSection', { bookId, previousArrivalTimeText: this.booking.arrivalTime })
+      }
     }
   },
   mounted() {
