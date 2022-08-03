@@ -95,29 +95,9 @@ export const mutations = {
       }
     }
   },
-  setCardStatus(state, { date, bookId, status }) {
+  setCard(state, { date, bookId, key, value }) {
     const updatedBookings = state.bookings[date].map(item => {
-      if (item.bookId === bookId) item.status = status
-      return item
-    })
-    state.bookings = {
-      ...state.bookings,
-      [date]: updatedBookings
-    }
-  },
-  setCardType(state, { date, bookId, type }) {
-    const updatedBookings = state.bookings[date].map(item => {
-      if (item.bookId === bookId) item.type = type
-      return item
-    })
-    state.bookings = {
-      ...state.bookings,
-      [date]: updatedBookings
-    }
-  },
-  setCardArrivalTime(state, { date, bookId, arrivalTime }) {
-    const updatedBookings = state.bookings[date].map(item => {
-      if (item.bookId === bookId) item.arrivalTime = arrivalTime
+      if (item.bookId === bookId) item[key] = value
       return item
     })
     state.bookings = {
@@ -216,7 +196,7 @@ export const actions = {
     const ref = doc(fireDb, `guests/${getters.apiDate}/bookings/${bookId}`)
     try {
       await setDoc(ref, { status }, { merge: true })
-      commit('setCardStatus', { date: getters.apiDate, bookId, status })
+      commit('setCard', { date: getters.apiDate, bookId, key: 'status', value: status })
     } catch (error) {
       console.log('Error while updating card status: ', error)
     }
@@ -225,8 +205,8 @@ export const actions = {
     const ref = doc(fireDb, `guests/${getters.apiDate}/bookings/${bookId}`)
     try {
       await setDoc(ref, { status, type }, { merge: true })
-      await commit('setCardStatus', { date: getters.apiDate, bookId, status })
-      commit('setCardType', { date: getters.apiDate, bookId, type })
+      await commit('setCard', { date: getters.apiDate, bookId, key: 'status', value: status })
+      commit('setCard', { date: getters.apiDate, bookId, key: 'type', value: type })
     } catch (error) {
       console.log('Error while updating card status and type: ', error)
     }
@@ -255,7 +235,7 @@ export const actions = {
         const ref = doc(fireDb, `guests/${getters.apiDate}/bookings/${bookId}`)
         try {
           await setDoc(ref, { arrivalTime: res.text }, { merge: true })
-          commit('setCardArrivalTime', { date: getters.apiDate, bookId, arrivalTime: res.text })
+          commit('setCard', { date: getters.apiDate, bookId, key: 'arrivalTime', value: res.text })
         } catch (error) {
           console.log('Error while updating card arrival time: ', error)
         }
