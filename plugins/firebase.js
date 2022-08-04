@@ -6,7 +6,11 @@
 
 // Change to firebase 9
 // https://lupas.medium.com/firebase-9-beta-nuxt-js-981cf3dac910
+// https://firebase.google.com/docs/web/modular-upgrade
 // https://firebase.google.com/docs/emulator-suite/connect_firestore#web-version-9
+
+// Firebase UI
+// https://firebase.google.com/docs/auth/web/firebaseui
 
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator  } from "firebase/firestore";

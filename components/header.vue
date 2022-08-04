@@ -1,11 +1,11 @@
 <template>
-  <header class="border-b border-gray-200 bg-gray-50">
+  <header class="border-b border-gray-200 bg-gray-900">
     <div class="max-w-screen-xl flex justify-between mx-auto px-6 xl:px-0">
       <div class="logo flex items-center">
         <nuxt-link 
           to="/" 
           :title="$store.state.company.name"
-          class="truncate text-gray-700 font-medium bg-white border-l-4 border-gray-500 my-4 px-3 py-1"
+          class="truncate text-white font-medium border-l-4 border-gray-500 transition hover:text-gray-100 my-4 px-3 py-1"
         >
           {{ $store.state.company.name }}
         </nuxt-link>
