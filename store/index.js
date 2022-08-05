@@ -7,6 +7,7 @@ export const state = () => ({
     name: "Easy Reach",
     shortenedName: "ER"
   },
+  isLoading: false,
   user: null,
   typeFilter: "all",
   statusFilter: "all",
@@ -67,6 +68,9 @@ export const getters = {
 }
 
 export const mutations = {
+  setIsLoading(state, payload) {
+    state.isLoading = payload
+  },
   setUser(state, payload) {
     state.user = { ...payload }
   },
@@ -164,6 +168,7 @@ export const actions = {
   ///////////////////////////////////
 
   async loadGuestsData({ commit, getters }) {
+    commit('setIsLoading', true)
     const q = query(collection(fireDb, `guests/${getters.apiDate}/bookings`), orderBy('guestName'))
     try {
       const querySnapshot = await getDocs(q)
@@ -172,8 +177,10 @@ export const actions = {
         res.push(doc.data())
       });
       commit('setBookings', { bookings: res, date: getters.apiDate })
+      commit('setIsLoading', false)
     } catch (e) {
       console.log('Error in loadGuestsData: ', e)
+      commit('setIsLoading', false)
     }
   },
   async dateLastUpdates({ commit }) {

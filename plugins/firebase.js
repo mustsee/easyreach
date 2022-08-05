@@ -16,7 +16,12 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator  } from "firebase/firestore";
 import { getAuth, connectAuthEmulator, GoogleAuthProvider } from "firebase/auth"
 
-const firebaseConfig = require('~/firebase.config.js')
+let firebaseConfig
+if (process.env.NODE_ENV !==  "production") {
+  firebaseConfig = require('~/firebase.config.dev.js')
+} else {
+  firebaseConfig = require('~/firebase.config.prod.js')
+}
 
 let firebaseApp
 const apps = getApps()
