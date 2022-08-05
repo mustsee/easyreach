@@ -1,10 +1,10 @@
 <template>
   <div
-    :class="`min-w-0 overflow-hidden shadow-md bg-white border-t-4 border-${color}-500`"
+    :class="`min-w-0 overflow-hidden shadow-md bg-white border-t-4 border-blue-500`"
   >
     <div class="p-4 flex items-center">
       <div
-        :class="`p-3 rounded-full text-${color}-500 bg-${color}-100 mr-4`"
+        :class="`p-3 rounded-full text-blue-500 bg-blue-100 mr-4`"
       >
        <svg fill="currentColor" viewBox="0 0 20 20" class="w-5 h-5">
           <path
