@@ -1,11 +1,13 @@
-import { fireDb } from '@/plugins/firebase.js'
+import { fireDb, fireAuth } from '@/plugins/firebase.js'
 import { collection, query, orderBy, getDocs, getDoc, doc, setDoc } from 'firebase/firestore'
+import { signOut } from 'firebase/auth'
 
 export const state = () => ({
   company: {
     name: "Easy Reach",
     shortenedName: "ER"
   },
+  user: null,
   typeFilter: "all",
   statusFilter: "all",
   // date related state
@@ -65,6 +67,9 @@ export const getters = {
 }
 
 export const mutations = {
+  setUser(state, payload) {
+    state.user = { ...payload }
+  },
   setCurrentDate(state, value) {
     state.currentDate = value
   },
@@ -120,6 +125,11 @@ export const mutations = {
 }
 
 export const actions = {
+  pageSignOut({ commit }) {
+    signOut(fireAuth, () => {
+      commit('setUser', null)
+    }).catch(err => console.log('Error in signOut: ', err))
+  },
   setSenderNameInCards({ state, commit, getters, dispatch }) {
     // TODO: If there is two times the same occurrence in the text, might cause a bug.
     // Check if more than one occurence, and if so, warn the user and ask for modification beforehand

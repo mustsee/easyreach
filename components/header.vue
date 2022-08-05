@@ -21,18 +21,40 @@
           </nuxt-link>
         </li>
       </ul>
+      <div v-if="showLogout" @click="handleLogout" class="text-white text-lg flex items-center px-4 cursor-pointer hover:text-gray-100">
+        logout
       </div>
+      <div v-else></div>
+    </div>
   </header>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   props: ["list"],
+  computed: {
+    currentUser() {
+      return this.$store.state.user
+    },
+    showLogout() {
+      if (this.$route.name !== 'index' && this.currentUser && this.currentUser.email) return true
+      return false
+    }
+  },
   methods: {
+    ...mapActions({
+      pageSignOut: 'pageSignOut'
+    }),
     getActiveClass(item) {
       if (item.path === "/")
         return this.$route.path == item.path ? "border-l border-r border-gray-200 text-gray-800 bg-white" : "hover:text-gray-600";
       return this.$route.path.indexOf(item.path) == 0 ? "border-l border-r border-gray-200 text-gray-800 bg-white" : "hover:text-gray-600"
+    },
+    handleLogout() {
+      this.$store.dispatch('pageSignOut', null)
+      this.$router.push('/')
     }
   }
 }

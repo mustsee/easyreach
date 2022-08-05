@@ -14,6 +14,7 @@
 
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator  } from "firebase/firestore";
+import { getAuth, connectAuthEmulator, GoogleAuthProvider } from "firebase/auth"
 
 const firebaseConfig = require('~/firebase.config.js')
 
@@ -25,10 +26,16 @@ if (!apps.length) {
   firebaseApp = apps[0]
 }
 
-const fireDb = getFirestore(firebaseApp, {});
+const fireDb = getFirestore(firebaseApp);
+const fireAuth = getAuth(firebaseApp)
+
+const authProviders = {
+  Google: GoogleAuthProvider.PROVIDER_ID,
+}
 
 if (process.env.NODE_ENV !==  "production") {
   connectFirestoreEmulator(fireDb, 'localhost', 8080);
+  connectAuthEmulator(fireAuth, 'http://localhost:9099')
 }
 
-export { fireDb }
+export { fireDb, fireAuth, authProviders }
