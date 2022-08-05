@@ -1,6 +1,9 @@
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
+  router: {
+    base: '/easyreach/'
+  },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -58,7 +61,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/',
+    baseURL: process.env.NODE_ENV !== 'production' ? 'http://localhost:5001/easy-reach-1f358/us-central1/' : 'https://europe-west3-easy-reach-1f358.cloudfunctions.net/',
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

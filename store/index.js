@@ -235,7 +235,7 @@ export const actions = {
 
   async writeGuestsData({ getters, dispatch }) {
     try {
-      let res = await this.$axios.$get('http://localhost:5001/easy-reach-1f358/us-central1/getArrivals?date=' + getters.apiDate)
+      let res = await this.$axios.$get('getArrivals?date=' + getters.apiDate)
       if (res.success) {
         dispatch('dataLastUpdate')
         return res
@@ -246,7 +246,7 @@ export const actions = {
   },
   async updateBeds24ArrivalTimeSection({ commit, getters }, { bookId, previousArrivalTimeText }) {
     try {
-      let res = await this.$axios.$get('http://localhost:5001/easy-reach-1f358/us-central1/updateBeds24ArrivalTimeSection?bookId=' + bookId + '&previousArrivalTimeText=' + previousArrivalTimeText)
+      let res = await this.$axios.$get('updateBeds24ArrivalTimeSection?bookId=' + bookId + '&previousArrivalTimeText=' + previousArrivalTimeText)
       if (res.success) {
         // Update store and firebase / Don't overcharge Beds24 API
         const ref = doc(fireDb, `guests/${getters.apiDate}/bookings/${bookId}`)
