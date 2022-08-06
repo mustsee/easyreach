@@ -5,7 +5,7 @@
     </div>
     <textarea 
       v-model="getText"
-      rows="8" 
+      rows="6" 
       spellcheck="false" 
       placeholder="Text to be sent to the guest" 
       class=" flex-1 p-2 m-1 focus:outline-none" 
