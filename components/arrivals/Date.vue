@@ -16,7 +16,7 @@
         <p class="flex items-center justify-center text-sm sm:text-base text-center tracking-wider font-medium uppercase text-gray-500 px-2 sm:px-8 sm:w-96 select-none">
           <span>{{ displayDate }}</span>
           <!-- Find where is the best to put this button -->
-          <span @click="handleLoadData" :class="['', !debounceLoadData ? '' : 'pointer-events-none opacity-50']" :title="`Last update: ${lastUpdate}`">
+          <span @click="handleLoadData" :class="[(!debounceLoadData && lastUpdate) ? '' : 'pointer-events-none opacity-50']" :title="`Last update: ${lastUpdate}`">
             <svg 
               fill="currentColor" 
               class="py-1 px-2 w-10 h-8 cursor-pointer hover:text-gray-600" 
@@ -102,7 +102,7 @@ export default {
       // SetTimeout on 5 seconds
       if (this.debounceLoadData) return
       this.debounceLoadData = true
-      this.$store.dispatch('writeGuestsData')
+      this.$store.dispatch('writeGuestsData', true)
         .then(res => {
           if (res.length > 0) this.loadGuestsData()
         })
@@ -116,6 +116,8 @@ export default {
     this.offSet = 0
     // !! No time zone handling
     // + 2 days, make it a parameter
+    // TODO: Set this beforehand SSR, cause no need to be it on client side
+    // And it will be more clear !
     let now = new Date()
     let currentDate = new Date(now.setDate(now.getDate() + 2))
     this.$store.commit('setCurrentDate', currentDate)

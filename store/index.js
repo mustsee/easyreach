@@ -105,6 +105,7 @@ export const mutations = {
     }
   },
   setCard(state, { date, bookId, key, value }) {
+    console.log('set card')
     const updatedBookings = state.bookings[date].map(item => {
       if (item.bookId === bookId) item[key] = value
       return item
@@ -233,9 +234,9 @@ export const actions = {
   //////       FUNCTIONS        //////
   ///////////////////////////////////
 
-  async writeGuestsData({ getters, dispatch }) {
+  async writeGuestsData({ getters, dispatch }, dataUpdate = false) {
     try {
-      let res = await this.$axios.$get('getArrivals?date=' + getters.apiDate)
+      let res = await this.$axios.$get('getArrivals?date=' + getters.apiDate + (dataUpdate ? '&updateData=true' : ''))
       if (res.success) {
         dispatch('dataLastUpdate')
         return res
