@@ -3,7 +3,7 @@
     <div v-if="currentUser.email">
       <arrivals-menu :numberOfGuests="getNumberOfGuests" :bookings="getBookings" />
       <div v-if="isLoading"></div>
-      <div v-else-if="!getNumberOfGuests" class="flex flex-col justify-center items-center text-gray-500">
+      <div v-else-if="!getNumberOfGuests" class="flex flex-col mb-12 justify-center items-center text-gray-500">
         <span class="my-8 text-xl font-semi-bold">NO DATA</span>
         <span @click="writeData" :class="!debounceLoadData ? '' : 'pointer-events-none opacity-50'"  title="Upload data">
           <svg 

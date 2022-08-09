@@ -141,6 +141,7 @@ export const actions = {
     if (state.lastSenderName) {
       Object.keys(state.cardsInfos).map(key => {
         let { text } = state.cardsInfos[key]
+        console.log('text', text)
         let updatedText = text.replace(state.lastSenderName, state.senderName)
         commit('setCardText', { bookId: key, text: updatedText})
       })
