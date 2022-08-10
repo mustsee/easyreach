@@ -135,29 +135,27 @@ export const actions = {
       commit('setUser', null)
     }).catch(err => console.log('Error in signOut: ', err))
   },
-  setSenderNameInCards({ state, commit, getters, dispatch }) {
+  setSenderNameInCards({ state, commit }) {
     // TODO: If there is two times the same occurrence in the text, might cause a bug.
     // Check if more than one occurence, and if so, warn the user and ask for modification beforehand
-    if (state.lastSenderName) {
-      Object.keys(state.cardsInfos).map(key => {
-        let { text } = state.cardsInfos[key]
-        console.log('text', text)
-        let updatedText = text.replace(state.lastSenderName, state.senderName)
-        commit('setCardText', { bookId: key, text: updatedText})
-      })
-    } else {
-      Object.keys(state.cardsInfos).map(key => { 
-        let booking = state.bookings[getters.apiDate].find(booking => booking.bookId === key)
-        dispatch('setVariablesInText', { booking })
-      });
-    }
+    Object.keys(state.cardsInfos).map(key => {
+      let { text } = state.cardsInfos[key]
+      let hasSenderNameKey = text.search('--senderName--')
+      let updatedText
+      if (hasSenderNameKey !== -1) {
+        updatedText = text.replace('--senderName--', state.senderName)
+      } else {
+        updatedText = text.replace(state.lastSenderName, state.senderName)
+      }
+      commit('setCardText', { bookId: key, text: updatedText})
+    })
     commit('setLastSenderName', state.senderName)
   },
   setVariablesInText({ state, commit }, { booking }) {
     const { text, variables } = state.cardsInfos[booking.bookId]
     let modifiedText = text
     for (const variable of variables) {
-      let replaceBy = booking[variable] ? booking[variable] : state[variable] ? state[variable] : `--${variable}--`
+      let replaceBy = booking[variable] ? booking[variable] : `--${variable}--`
       modifiedText = modifiedText.replace(`--${variable}--`, replaceBy )
     }
     commit('setCardText', { bookId: booking.bookId, text: modifiedText })
