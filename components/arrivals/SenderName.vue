@@ -5,7 +5,7 @@
     <div class="w-full py-4 flex items-center">
       <div class="flex flex-1">
         <p class="relative flex flex-1 text-base font-normal text-gray-700">
-          <input v-model="senderName" v-on:keyup.enter="handleSenderName" type="text" placeholder="Sender's name" spellcheck="false" class="w-full pl-3 pr-12 py-2 rounded-sm shadow focus:shadow-md focus:outline-none focus:shadow-outline">
+          <input v-model="senderName" v-on:keyup.enter="handleSenderName" type="text" id="sendersName" name="sendersName" placeholder="Sender's name" spellcheck="false" class="w-full pl-3 pr-12 py-2 rounded-sm shadow focus:shadow-md focus:outline-none focus:shadow-outline">
           <span @click="handleSenderName" :class="['absolute px-3 right-0 top-0 bottom-0 flex items-center z-10 border-l text-gray-500 bg-gray-100 cursor-pointer hover:text-gray-600 hover:bg-gray-200 transition-all', 
             senderName.length < 3 ? 'pointer-events-none opacity-50' : '']">
             <svg fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4">

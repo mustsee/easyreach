@@ -92,4 +92,4 @@ sw.*
 # Vim swap files
 *.swp
 
-functions/index.js
+# functions/index.js

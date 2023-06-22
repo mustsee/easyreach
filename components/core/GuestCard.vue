@@ -26,7 +26,7 @@
         </div>
       </div>
       <div v-if="booking.status === 'todo'" class="lg:w-3/5 px-6 py-8 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
-        <select-component @selectChange="handleSelectType" :type="type" :messages="messages" />
+        <select-component @selectChange="handleSelectType" :type="type" :messages="messages" :index="index" />
         <textarea-component @textChange="handleTextChange" :text="text" class="mt-6" />
         <div class="mt-8">
           <div class="action-button rounded-md shadow">
@@ -101,7 +101,7 @@
 import { mapActions } from "vuex";
 
 export default {
-  props: ["booking", "messages"],
+  props: ["booking", "messages", "index"],
   computed: {
     bookId() {
       return this.booking.bookId

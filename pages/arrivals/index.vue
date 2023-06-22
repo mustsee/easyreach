@@ -16,7 +16,7 @@
         </span>
       </div>
       <div v-else>
-        <guest-card v-for="(booking, index) in filteredBookings" :key="index" :booking="booking" :messages="getMessages" />
+        <guest-card v-for="(booking, index) in filteredBookings" :key="index" :booking="booking" :messages="getMessages" :index="index" />
       </div>
     </div>
     <div v-else></div>

@@ -4,7 +4,7 @@
   >
     <div class="w-full py-4 flex items-center">
       <div class="flex flex-1 relative text-gray-700 bg-white rounded-sm shadow">
-        <select v-model="type" class="appearance-none w-full py-2 pl-3 pr-10 bg-white focus:outline-none" name="status" id="status">
+        <select v-model="type" class="appearance-none w-full py-2 pl-3 pr-10 bg-white focus:outline-none" name="type" id="type">
           <option value="all">All messages</option>
           <option value="whatsapp">WhatsApp</option>
           <option value="email">Email</option>
