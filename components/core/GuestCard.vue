@@ -29,7 +29,23 @@
         <select-component @selectChange="handleSelectType" :type="type" :messages="messages" :index="index" />
         <textarea-component @textChange="handleTextChange" :text="text" class="mt-6" />
         <div class="mt-8">
-          <div class="action-button rounded-md shadow">
+          <div 
+            v-if="booking.type === 'email'" 
+            class="action-button rounded-md shadow cursor-pointer"
+            @click="sendEmail(bookId)"
+            :class="['flex items-center justify-center w-full px-5 py-3 text-base font-medium text-red-600 border border-red-600 bg-white rounded-md hover:bg-red-200 transition-all']"
+          >
+            Send email
+            <span class="w-6 h-6 ml-2">
+              <svg viewBox="0 0 24 24">
+                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="icon-tabler">
+                  <rect width="18" height="14" x="3" y="5" rx="2"></rect>
+                  <path d="m3 7 9 6 9-6"></path>
+                </g>
+              </svg>
+            </span>
+          </div>
+          <div v-if="booking.type === 'whatsapp'" class="action-button rounded-md shadow">
             <a 
               @click="updateBookingStatus(booking.bookId, 'inProgress')"
               :href="getWhatsAppLink" 
@@ -61,12 +77,12 @@
             <h2 class="text-sm text-gray-500">A successfull sending will update the Arrival time section.</h2>
           </div>
           <div class="flex justify-around flex-wrap mb-4">
-            <div @click="updateBookingStatusAndType(booking.bookId, 'error', 'email')" class="cursor-pointer flex items-center justify-center border border-red-500 text-red-500 bg-white hover:bg-red-100 rounded-full w-20 h-20" title="Fail">
+            <div @click="updateBookingStatusAndType(booking.bookId, 'todo', 'email')" class="cursor-pointer flex items-center justify-center border border-red-500 text-red-500 bg-white hover:bg-red-100 rounded-full w-20 h-20" title="Fail">
               <svg width="24" height="24" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M5 14h-5v-12h5v12zm18.875-4.809c0-.646-.555-1.32-1.688-1.41-.695-.055-.868-.623-.031-.812.701-.159 1.098-.652 1.098-1.181 0-.629-.559-1.309-1.826-1.543-.766-.141-.842-.891-.031-.953.688-.053.96-.291.96-.626-.001-.931-1.654-2.666-4.852-2.666-4.16 0-6.123 2.067-10.505 2.768v10.878c2.375.869 4.466 2.644 5.688 6.886.478 1.661.781 3.468 2.374 3.468 2.375 0 2.594-5.125 1.688-8.781 1.312-.688 3.751-.936 4.979-.885 1.771.072 2.271-.818 2.271-1.49 0-1.011-.833-1.35-1.354-1.51-.609-.188-.889-.807-.031-.922.836-.112 1.26-.656 1.26-1.221z"/>
               </svg>
             </div>
-            <div @click="updateBookingStatusAndType(booking.bookId, 'done', 'whatsapp')" class="cursor-pointer flex items-center justify-center text-green-500 border border-green-500 bg-white hover:bg-green-100 rounded-full w-20 h-20" title="Success">
+            <div @click="updateArrivalTimeSection(booking.bookId, 'done')" class="cursor-pointer flex items-center justify-center text-green-500 border border-green-500 bg-white hover:bg-green-100 rounded-full w-20 h-20" title="Success">
               <svg width="24" height="24" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M5 22h-5v-12h5v12zm17.615-8.412c-.857-.115-.578-.734.031-.922.521-.16 1.354-.5 1.354-1.51 0-.672-.5-1.562-2.271-1.49-1.228.05-3.666-.198-4.979-.885.906-3.656.688-8.781-1.688-8.781-1.594 0-1.896 1.807-2.375 3.469-1.221 4.242-3.312 6.017-5.687 6.885v10.878c4.382.701 6.345 2.768 10.505 2.768 3.198 0 4.852-1.735 4.852-2.666 0-.335-.272-.573-.96-.626-.811-.062-.734-.812.031-.953 1.268-.234 1.826-.914 1.826-1.543 0-.529-.396-1.022-1.098-1.181-.837-.189-.664-.757.031-.812 1.133-.09 1.688-.764 1.688-1.41 0-.565-.424-1.109-1.26-1.221z"/>
               </svg>
@@ -74,23 +90,34 @@
           </div>
         </div>
       </div>
-      <div v-else class="lg:w-3/5 px-6 py-8 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
+      <div v-else-if="booking.status === 'done'" class="lg:w-3/5 px-6 py-8 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
         <div class="flex justify-end" title="Cancel">
-          <span @click="updateBookingStatusAndType(booking.bookId, 'todo', 'whatsapp')" class="cursor-pointer">
+          <span @click="updateBookingStatus(booking.bookId, 'todo')" class="cursor-pointer">
             <svg width="24" height="24" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24">
               <path d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"/>
             </svg>
           </span>
         </div>
-          <div v-if="booking.status === 'done'" class="flex flex-1 m-12 justify-center items-center">
+          <div class="flex flex-1 m-12 justify-center items-center">
             <div class="w-12 h-12 text-green-500">
               <svg viewBox="0 0 24 24">
                   <path fill="currentColor" d="M23 0l-4.5 16.5-6.097-5.43 5.852-6.175-7.844 5.421-5.411-1.316 18-9zm-11 12.501v5.499l2.193-3.323-2.193-2.176zm-8.698 6.825l-1.439-.507 5.701-5.215 1.436.396-5.698 5.326zm3.262 4.287l-1.323-.565 4.439-4.503 1.32.455-4.436 4.613zm-4.083.387l-1.481-.507 8-7.89 1.437.397-7.956 8z"/>
               </svg>
             </div>
           </div>
-          <div v-else class="flex flex-1 m-12 justify-center items-center">
-           <div>Email to send</div>
+      </div>
+      <div v-else-if="booking.status === 'error'" class="lg:w-3/5 px-6 py-8 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
+        <div class="flex justify-end" title="Cancel">
+          <span @click="updateBookingStatus(booking.bookId, 'todo')" class="cursor-pointer">
+            <svg width="24" height="24" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24">
+              <path d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"/>
+            </svg>
+          </span>
+        </div>
+        <div class="flex flex-1 m-12 justify-center items-center">
+            <div class="w-12 h-12 text-grey-500">
+              Error
+            </div>
           </div>
       </div>
     </div>
@@ -135,7 +162,9 @@ export default {
     ...mapActions({
       updateCardStatus: 'updateCardStatus',
       updateCardStatusAndType: 'updateCardStatusAndType',
-      updateBeds24ArrivalTimeSection: 'updateBeds24ArrivalTimeSection'
+      updateBeds24ArrivalTimeSection: 'updateBeds24ArrivalTimeSection',
+      sendMailNodeMailer: 'sendMailNodeMailer', // Naming is not good
+
     }),
     handleSelectType(value) {
       this.computeCardInfos(value)
@@ -154,9 +183,21 @@ export default {
     },
     updateBookingStatusAndType(bookId, status, type) {
       this.$store.dispatch('updateCardStatusAndType', { bookId, status, type })
-      if (status === 'done' && type === 'whatsapp') {
-        this.$store.dispatch('updateBeds24ArrivalTimeSection', { bookId, previousArrivalTimeText: this.booking.arrivalTime })
-      }
+    },
+    updateArrivalTimeSection(bookId, status) {
+      this.updateBookingStatus(bookId, status)
+      this.$store.dispatch('updateBeds24ArrivalTimeSection', { bookId, previousArrivalTimeText: this.booking.arrivalTime, type: this.type })
+    },
+    sendEmail(bookId) {
+      const guestEmail = this.booking.email
+      const text = JSON.stringify(this.text)
+      this.$store.dispatch('sendMailNodeMailer', { guestEmail, text }).then(res => {
+        if (res.success) {
+          this.updateArrivalTimeSection(bookId, 'done')
+        } else {
+          this.updateBookingStatus(bookId, 'error')
+        }
+      })
     }
   },
   mounted() {

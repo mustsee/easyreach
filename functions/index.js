@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const firestore = require("firebase-admin/firestore"); 
 const { initializeApp } = require('firebase-admin/app');
-// const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const axios = require("axios");
 const cors = require("cors")({ origin: true });
 
@@ -119,7 +119,7 @@ exports.getArrivals = functions.https.onRequest(async (request, response) => {
               arrivalTime: guestArrivalTime, // They modify this column
               checkinTime: helpers.getCheckinTime(guestComments, referer),
               messageType: helpers.getMessageType(guestComments, referer, guestPhone, guestEmail),
-              notes, // Probably not used
+              notes, // Probably not used // Sometimes it is used
               message, // Probably not used
               //guestCommentsModified: guestComments.replaceAll('\n', '<br />'),
               guestCommentsModified: guestComments.replaceAll(new RegExp('\r?\n','g'), '<br />'),
@@ -148,6 +148,7 @@ exports.getArrivals = functions.https.onRequest(async (request, response) => {
               // TODO: handle below case
               // We could the type only if the status in not done
               status: item.messageType === 'other' ? 'other' : 'todo', // todo/inProgress(clicked on link)/done/other(!phone && !mail)
+              // Might change if updated...
               type: item.messageType === 'other' ? 'other' : item.messageType === 'emailMessage' ? 'email' : 'whatsapp', // whatsapp/email/other => should be an interface
             }
           })
@@ -187,34 +188,58 @@ exports.getArrivals = functions.https.onRequest(async (request, response) => {
 // https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
 
 exports.sendEmail = functions.https.onRequest(async (request, response) => {
-  /* setHeader(response)
+  cors(request, response, async () => {
+    const { guestEmail, text } = request.query
 
-  const { guestEmail, text } = request.query
+    const mailTransport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
+    const APP_NAME = 'Princes Street Hostel';
 
-  const mailTransport = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD,
-    },
-  });
-  const APP_NAME = 'Princes Street Hostel';
+    const mailOptions = {
+      from: `${APP_NAME} <noreply@firebase.com>`,
+      to: 'thomas.sypniewski+test@gmail.com', // guestEmail
+      attachments: [{
+        filename: 'psh_logo.png',
+        path: '../static/images/psh_logo.png',
+        cid: 'unique@kreata.ee'
+      }]
+    }
 
-  const mailOptions = {
-    from: `${APP_NAME} <noreply@firebase.com>`,
-    to: 'thomas.sypniewski+test@gmail.com', // guestEmail
-  };
+    const modifiedText = JSON.parse(text).replaceAll('\n', '<br/>')
 
-  const modifiedText = JSON.parse(text).replaceAll('\n', '<br/>')
+    mailOptions.subject = `${APP_NAME} - Your arrival time and contact number`;
 
-  mailOptions.subject = `${APP_NAME} - Your arrival time and contact number`;
-  mailOptions.html = `<p>${modifiedText}</p>`
+    mailOptions.html = `
+    <p>${modifiedText}</p>
+    <p></p>
+    <p>
+      <div>
+        <img src="cid:unique@kreata.ee"alt="Logo Princes Street Hostel" width="96" height="96" />
+      </div>
+      <br/>
+      <div>Princes Street Hostel</div>
+      <div>5 West Register Street</div>
+      <div>+44 (0)131 556 6894</div>
+      <div>
+        <a href="https://princesstreethostel.com">
+          princesstreethostel.com
+        </a>
+      </div>
+    </p>
+    `
+    
 
-  try {
-    await mailTransport.sendMail(mailOptions)
-    response.json({ success: true, type: 'email' })
-  } catch (error) {
-    functions.logger.error('Error in sendEmail: ', error)
-    response.json({ success: false, email: true })
-  } */
+    try {
+      await mailTransport.sendMail(mailOptions)
+      response.json({ success: true })
+    } catch (error) {
+      functions.logger.error('Error in sendEmail: ', error)
+      response.json({ success: false, error })
+    }
+  })
 })

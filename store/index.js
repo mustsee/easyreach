@@ -56,15 +56,15 @@ export const state = () => ({
     {
       type: "emailMessage",
       name: "Email Message",
-      variables: [],
-      text: `Email message`
+      variables: ["guestFirstName", "senderName"],
+      text: `Hi --guestFirstName--, this is --senderName--, I hope you are well and thanks again for booking with us.\nCould you please let us know what time you will be arriving tomorrow and also if you have a WhatsApp number?\nPlease bear in mind we are at the very top of our building and there are a quite a few steps to reach reception level. See you soon!`
     },
-    {
+    /* {
       type: "other",
-      name: "Other",
+      name: "Custom",
       variables: [],
-      text: `Custom message for other (group, etc...)`
-    }
+      text: `Write here custom message`
+    } */
   ],
 });
 
@@ -126,6 +126,12 @@ export const mutations = {
         ...state.cardsInfos[bookId],
         text,
       },
+    };
+  },
+  setCardType(state, { bookId, type }) {
+    state.cardsInfos = {
+      ...state.cardsInfos,
+      [bookId]: { type },
     };
   },
   setCard(state, { date, bookId, key, value }) {
@@ -262,12 +268,28 @@ export const actions = {
         key: "status",
         value: status,
       });
-      commit("setCard", {
+      await commit("setCard", {
         date: getters.apiDate,
         bookId,
         key: "type",
         value: type,
       });
+      if (type === 'email') {
+        // Needed to set the text
+        await commit("setCard", {
+          date: getters.apiDate,
+          bookId,
+          key: "messageType",
+          value: "emailMessage"
+        });
+        // Needed to set the select
+        await commit("setCardType", {
+          bookId,
+          type: "emailMessage",
+        });
+
+      }
+      
     } catch (error) {
       console.log("Error while updating card status and type: ", error);
     }
@@ -291,14 +313,16 @@ export const actions = {
   },
   async updateBeds24ArrivalTimeSection(
     { commit, getters },
-    { bookId, previousArrivalTimeText }
+    { bookId, previousArrivalTimeText, type }
   ) {
     try {
       let res = await this.$axios.$get(
         "updateBeds24ArrivalTimeSection?bookId=" +
           bookId +
           "&previousArrivalTimeText=" +
-          previousArrivalTimeText
+          previousArrivalTimeText +
+          "&type" +
+          type
       );
       if (res.success) {
         // Update store and firebase / Don't overcharge Beds24 API
@@ -319,6 +343,20 @@ export const actions = {
       console.log("Error in updateBeds24ArrivalTimeSection: ", error);
     }
   },
+  async sendMailNodeMailer({}, { guestEmail, text }) {
+    try {
+      let res = await this.$axios.$get(
+        "sendEmail?guestEmail=" +
+        guestEmail +
+        "&text=" +
+        text
+      );
+      return res
+    } catch (error) {
+      console.log("Error in sendMailNodeMailer: ", error);
+      return { success: false }
+    }
+  }
 };
 
 // TODO: Check all the possibilities with the arrival time, exceptions, etc...

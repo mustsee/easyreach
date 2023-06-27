@@ -15,7 +15,7 @@
           Progression
         </p>
         <p class="text-base font-normal text-gray-700">
-          {{ progress }} <span class="font-light">/</span> {{ numberOfGuests }}
+          {{ progress }} <span class="font-light">/</span> {{ total }}
         </p>
       </div>
     </div>
@@ -24,6 +24,6 @@
 
 <script>
 export default {
-  props: ["color", "numberOfGuests", "progress"]
+  props: ["color", "total", "progress"]
 }
 </script>
