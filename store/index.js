@@ -258,10 +258,11 @@ export const actions = {
       console.log("Error while updating card status: ", error);
     }
   },
-  async updateCardStatusAndType({ commit, getters }, { bookId, status, type }) {
+  // Only used when the client has no whatsapp
+  async updateCardStatusAndType({ commit, getters }, { bookId, status, type, messageType }) {
     const ref = doc(fireDb, `guests/${getters.apiDate}/bookings/${bookId}`);
     try {
-      await setDoc(ref, { status, type }, { merge: true });
+      await setDoc(ref, { status, type, messageType }, { merge: true });
       await commit("setCard", {
         date: getters.apiDate,
         bookId,
@@ -274,22 +275,12 @@ export const actions = {
         key: "type",
         value: type,
       });
-      if (type === 'email') {
-        // Needed to set the text
-        await commit("setCard", {
-          date: getters.apiDate,
-          bookId,
-          key: "messageType",
-          value: "emailMessage"
-        });
-        // Needed to set the select
-        await commit("setCardType", {
-          bookId,
-          type: "emailMessage",
-        });
-
-      }
-      
+      await commit("setCard", {
+        date: getters.apiDate,
+        bookId,
+        key: "messageType",
+        value: messageType,
+      });
     } catch (error) {
       console.log("Error while updating card status and type: ", error);
     }

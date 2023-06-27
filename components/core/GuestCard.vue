@@ -77,7 +77,7 @@
             <h2 class="text-sm text-gray-500">A successfull sending will update the Arrival time section.</h2>
           </div>
           <div class="flex justify-around flex-wrap mb-4">
-            <div @click="updateBookingStatusAndType(booking.bookId, 'todo', 'email')" class="cursor-pointer flex items-center justify-center border border-red-500 text-red-500 bg-white hover:bg-red-100 rounded-full w-20 h-20" title="Fail">
+            <div @click="updateBookingStatusAndType(booking.bookId, 'todo', 'email', 'emailMessage')" class="cursor-pointer flex items-center justify-center border border-red-500 text-red-500 bg-white hover:bg-red-100 rounded-full w-20 h-20" title="Fail">
               <svg width="24" height="24" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M5 14h-5v-12h5v12zm18.875-4.809c0-.646-.555-1.32-1.688-1.41-.695-.055-.868-.623-.031-.812.701-.159 1.098-.652 1.098-1.181 0-.629-.559-1.309-1.826-1.543-.766-.141-.842-.891-.031-.953.688-.053.96-.291.96-.626-.001-.931-1.654-2.666-4.852-2.666-4.16 0-6.123 2.067-10.505 2.768v10.878c2.375.869 4.466 2.644 5.688 6.886.478 1.661.781 3.468 2.374 3.468 2.375 0 2.594-5.125 1.688-8.781 1.312-.688 3.751-.936 4.979-.885 1.771.072 2.271-.818 2.271-1.49 0-1.011-.833-1.35-1.354-1.51-.609-.188-.889-.807-.031-.922.836-.112 1.26-.656 1.26-1.221z"/>
               </svg>
@@ -181,8 +181,9 @@ export default {
     updateBookingStatus(bookId, status) {
       this.$store.dispatch('updateCardStatus', { bookId, status })
     },
-    updateBookingStatusAndType(bookId, status, type) {
-      this.$store.dispatch('updateCardStatusAndType', { bookId, status, type })
+    async updateBookingStatusAndType(bookId, status, type, messageType) {
+      await this.$store.dispatch('updateCardStatusAndType', { bookId, status, type, messageType })
+      this.computeCardInfos('emailMessage')
     },
     updateArrivalTimeSection(bookId, status) {
       this.updateBookingStatus(bookId, status)
@@ -193,6 +194,9 @@ export default {
       const text = JSON.stringify(this.text)
       this.$store.dispatch('sendMailNodeMailer', { guestEmail, text }).then(res => {
         if (res.success) {
+          // DEV
+          // this.updateBookingStatus(bookId, 'done')
+          // PROD
           this.updateArrivalTimeSection(bookId, 'done')
         } else {
           this.updateBookingStatus(bookId, 'error')
