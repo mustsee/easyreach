@@ -61,12 +61,12 @@ export const state = () => ({
       variables: ["guestFirstName", "senderName"],
       text: `Hi --guestFirstName--, this is --senderName--, I hope you are well and thanks again for booking with us.\nCould you please let us know what time you will be arriving tomorrow and also if you have a WhatsApp number?\nPlease bear in mind we are at the very top of our building and there are a quite a few steps to reach reception level. See you soon!`
     },
-    /* {
+    {
       type: "other",
       name: "Custom",
       variables: [],
       text: `Write here custom message`
-    } */
+    }
   ],
 });
 
