@@ -16,9 +16,9 @@ const cors = require("cors")({ origin: true });
 
 let firebaseConfig;
 if (process.env.NODE_ENV !== "production") {
-  firebaseConfig = require("./../firebase.config.prod");
+  firebaseConfig = require("./../firebase.config.dev.js");
 } else {
-  firebaseConfig = require("./../firebase.config.prod");
+  firebaseConfig = require("./../firebase.config.prod.js");
 }
 
 const app = initializeApp(firebaseConfig)
