@@ -199,14 +199,12 @@ export const actions = {
   ///////////////////////////////////
 
   async isUserAuthorized({}, { email }) {
-    console.log('asd', email)
     const q = query(
       collection(fireDb, "users"),
       where("email", "==", email),
       limit(1))
     try {
       const querySnapshot = await getDocs(q);
-      console.log(querySnapshot)
       if (querySnapshot.empty) {
         return false
       } else {
