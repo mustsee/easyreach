@@ -10,7 +10,7 @@ const cors = require("cors")({ origin: true });
   firebase emulators:start --import <export-directory>
 */
 
-require('dotenv').config()
+//require('dotenv').config()
 //console.log(process.env)
 // Without the dotenv package, it doesn't work ? It seems like it works
 
