@@ -1,6 +1,6 @@
 export default {
   // Target: https://go.nuxtjs.dev/config-target
-  target: 'universal',
+  target: 'static',
   router: {
     base: '/easyreach/'
   },
