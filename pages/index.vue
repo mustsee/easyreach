@@ -18,7 +18,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      pageSignOut: 'pageSignOut'
+      pageSignOut: 'pageSignOut',
+      isUserAuthorized: 'isUserAuthorized',
     }),
     showAuthContainer() {
       const firebaseui = require('firebaseui')
@@ -35,9 +36,9 @@ export default {
       }
       ui.start('#firebaseui-auth-container', config)
     },
-    signInResult(res) {
-      const authorizedMails = ['thomas.sypniewski@gmail.com', 'princesstreethostel@gmail.com']
-      if (authorizedMails.find(email => email === res.user.email)) {
+    async signInResult(res) {
+      const isUserAuthorized = await this.isUserAuthorized({ email: res.user.email })
+      if (isUserAuthorized) {
         this.$router.push('/arrivals')
       } else {
         this.$store.dispatch('pageSignOut').then(() => this.showAuthContainer())

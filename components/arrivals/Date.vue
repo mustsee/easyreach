@@ -121,8 +121,6 @@ export default {
     let now = new Date()
     let currentDate = new Date(now.setDate(now.getDate() + 2))
     this.$store.commit('setCurrentDate', currentDate)
-    this.$store.dispatch('loadGuestsData')
-    this.$store.dispatch('dateLastUpdates')
   }
 }
 </script>

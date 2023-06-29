@@ -1,9 +1,19 @@
 rules_version = '2';
 service cloud.firestore {
+  function isUserAuthenticated() {
+    return request.auth.uid != null; 
+  }
+
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2024, 8, 19);
+    match /guests/{guestID}/bookings/{bookingID} {
+      allow read, write: if isUserAuthenticated()
+    }
+    match /updatedAt/{updatedAtID} {
+      allow read, write: if isUserAuthenticated()
+    }
+    match /users/{userID} {
+      allow read: if isUserAuthenticated();
+      allow write: if false;
     }
   }
 }

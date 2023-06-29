@@ -7,8 +7,8 @@ export default context => {
   return new Promise((resolve) => {
     onAuthStateChanged(fireAuth, user => {
       if (user) {
-      const { displayName, email } = user
-      store.commit('setUser', { displayName, email })
+      const { displayName, email, uid } = user
+      store.commit('setUser', { displayName, email, uid })
       } else {
         store.commit('setUser', null)
       }

@@ -94,8 +94,13 @@ export default {
         .finally(() => this.debounce = false)
     }
   },
+  activated() {
+    if (!this.currentUser.email) return this.$router.push('/')
+  },
   mounted() {
     if (!this.currentUser.email) return this.$router.push('/')
+    this.loadData();
+    this.$store.dispatch('dateLastUpdates')
   }
 }
 </script>

@@ -3,6 +3,8 @@ import {
   collection,
   query,
   orderBy,
+  where,
+  limit,
   getDocs,
   getDoc,
   doc,
@@ -196,6 +198,25 @@ export const actions = {
   //////      COLLECTION        //////
   ///////////////////////////////////
 
+  async isUserAuthorized({}, { email }) {
+    console.log('asd', email)
+    const q = query(
+      collection(fireDb, "users"),
+      where("email", "==", email),
+      limit(1))
+    try {
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot)
+      if (querySnapshot.empty) {
+        return false
+      } else {
+        return true
+      }
+    } catch (e) {
+      console.log("Error in isUserAuthorized: ", e);
+      return false
+    }
+  },
   async loadGuestsData({ commit, getters }) {
     commit("setIsLoading", true);
     const q = query(
